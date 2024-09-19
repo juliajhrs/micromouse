@@ -4,7 +4,6 @@
 
 namespace mtrn3100 {
 
-
 class DualEncoder {
 public:
     DualEncoder(uint8_t enc1, uint8_t enc2,uint8_t enc3, uint8_t enc4) : mot1_int(enc1), mot1_dir(enc2), mot2_int(enc3), mot2_dir(enc4) {
@@ -36,11 +35,17 @@ public:
 
     // Helper function which to convert encouder count to radians
     float getLeftRotation() {
-        return (static_cast<float>(l_count) / counts_per_revolution ) * 2* PI;
+        // return (static_cast<float>(l_count) / counts_per_revolution ) * 2* PI;
+        return getRotation(l_count);
     }
 
     float getRightRotation() {
-        return (static_cast<float>(r_count) / counts_per_revolution ) * 2* PI;
+        // return (static_cast<float>(r_count) / counts_per_revolution ) * 2* PI;
+        return getRotation(r_count);
+    }
+
+    float getRotation(long count) {
+        return (static_cast<float>(count) / counts_per_revolution ) * 2* PI;
     }
 
 private:
@@ -60,7 +65,7 @@ public:
     const uint8_t mot1_int,mot1_dir,mot2_int,mot2_dir;
     volatile int8_t direction;
     float position = 0;
-    uint16_t counts_per_revolution = 750;
+    uint16_t counts_per_revolution = 700;
     volatile long l_count = 0;
     volatile long r_count = 0;
     uint32_t prev_time;

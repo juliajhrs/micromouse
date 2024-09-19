@@ -1,37 +1,45 @@
 #pragma once
 
-#include "Wire.h"
-#include <MPU6050_light.h>
+# include <MPU6050_light.h>
+# include "Wire.h"
 
+namespace mtrn3100 {
 
-namespace mtrn3100
-{
-    class IMU 
-    {
-        public:
-          IMU(MPU6050 mpu) : imu(mpu) {
-          }
+class IMU {
+    public:
+        IMU() {
+            // imu = MPU6050(Wire);
+            initial_angle = 0.0;
+        }
 
-          void setup() {
+        void begin() {
+            Wire.begin();
             byte status = imu.begin();
-            while(status!=0){ } // stop everything if could not connect to MPU6050
-            delay(50);
-            imu.calcOffsets(); // gyro and accelero
-          }
-        
-          float getYawValue() {
+            while(status!=0){ }
+            imu.calcOffsets(true,true);
+            initial_angle = imu.getAngleZ();
+        }
+
+        void reset() {
+            delay(200);
+            // imu.calcOffsets(true,true);
+            initial_angle = imu.getAngleZ();
+        }
+
+        void update() {
             imu.update();
-            float output = imu.getAngleZ();
-            currentyaw = output;
-            return output;
-          }
+        }
 
-          void setOffsets() {
-            imu.calcOffsets();
-          }
+        float getCurrentAngle() {
+            imu.update();
+            return imu.getAngleZ() -  initial_angle;
+        }
 
-        private:
-          MPU6050 imu;
-          float currentyaw;
-    };
+    private:
+        MPU6050 imu = MPU6050(Wire);
+        float initial_angle;
+
+};
+
 }
+

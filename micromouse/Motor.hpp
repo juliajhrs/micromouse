@@ -1,49 +1,33 @@
 #pragma once
 
 #include <Arduino.h>
-#include <math.h>
+#include "math.h"
 
 namespace mtrn3100 {
 
-
-// The motor class is a simple interface designed to assist in motor control
-// You may choose to impliment additional functionality in the future such as dual motor or speed control 
 class Motor {
 public:
-    Motor( uint8_t in1, uint8_t in2) :  pwm_pin(in1), dir_pin(in2) {
-        // TODO: Set both pins as output
-
-        pinMode(pwm_pin, OUTPUT);
-        pinMode(dir_pin, OUTPUT);
+    // Constructor
+    Motor(uint8_t in1, uint8_t in2) :  pwm_pin_(in1), dir_pin_(in2) {
+        pinMode(pwm_pin_, OUTPUT);
+        pinMode(dir_pin_, OUTPUT);
     }
-
 
     // This function outputs the desired motor direction and the PWM signal. 
     // NOTE: a pwm signal > 255 could cause troubles as such ensure that pwm is clamped between 0 - 255.
     void setPWM(int16_t pwm) {
-      // TODO: Output digital direction pin based on if input signal is positive or negative.
-
-      if (pwm < 0) {
-        pwm = pwm * -1;
-        digitalWrite(dir_pin, HIGH);
-      }
-      else if (pwm >= 0) {
-        digitalWrite(dir_pin, LOW);
-      };
-      
-      // TODO: Output PWM signal between 0 - 255.
-
-      if (pwm > 255) {
-          analogWrite(pwm_pin, 255);
-      };
-      if (pwm <= 255) {
-          analogWrite(pwm_pin, pwm);
-      };
-    }
+        if (pwm > 0) {
+            digitalWrite(dir_pin_, LOW);
+            analogWrite(pwm_pin_, min(pwm, 255));
+        } else {
+            digitalWrite(dir_pin_, HIGH);
+            analogWrite(pwm_pin_, min(-pwm, 255));
+        }
+    } 
 
 private:
-    const uint8_t pwm_pin;
-    const uint8_t dir_pin;
+    const uint8_t pwm_pin_;
+    const uint8_t dir_pin_;
 };
 
-}  // namespace mtrn3100
+} // namespace mtrn3100

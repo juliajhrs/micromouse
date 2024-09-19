@@ -1,6 +1,6 @@
 #pragma once
 
-#include "math.h"
+#include <math.h>
 
 namespace mtrn3100 {
 
@@ -17,15 +17,10 @@ public:
 
         error = setpoint - (input - zero_ref);
 
-        // TODO: IMPLIMENT PID CONTROLLER
-        integral = integral + (dt * error);
-        derivative = (error - prev_error)/dt;
-        output = kp*error + ki*integral + kd*derivative;
-
-        // Potential need PID anti windup
-
+        integral += error * dt;
+        derivative = (error - prev_error) / dt;
+        output = kp * error + ki * integral + kd * derivative;
         prev_error = error;
-
         return output;
     }
 
@@ -64,4 +59,5 @@ private:
     
 };
 
-}  // namespace mtrn3100
+}  // namespace mtrn3100 
+
